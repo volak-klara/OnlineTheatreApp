@@ -1,0 +1,563 @@
+﻿@* <!DOCTYPE html> *@
+@* <html lang="en"> *@
+@* <head> *@
+@*     <meta charset="utf-8" /> *@
+@*     <meta name="viewport" content="width=device-width, initial-scale=1.0" /> *@
+@*     <title>@ViewData["Title"] - OnlineTheatre.Web</title> *@
+@*     <script type="importmap"></script> *@
+@*     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" /> *@
+@*     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" /> *@
+@*     <link rel="stylesheet" href="~/OnlineTheatre.Web.styles.css" asp-append-version="true" /> *@
+@* </head> *@
+@* <body> *@
+@*     <header> *@
+@*         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3"> *@
+@*             <div class="container-fluid"> *@
+@*                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">OnlineTheatre.Web</a> *@
+@*                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent" *@
+@*                         aria-expanded="false" aria-label="Toggle navigation"> *@
+@*                     <span class="navbar-toggler-icon"></span> *@
+@*                 </button> *@
+@*                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between"> *@
+@*                     <ul class="navbar-nav flex-grow-1"> *@
+@*                         <li class="nav-item"> *@
+@*                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a> *@
+@*                         </li> *@
+@*                         <li class="nav-item"> *@
+@*                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a> *@
+@*                         </li> *@
+@*                         <li class="nav-item"> *@
+@*                             <a class="nav-link text-dark" asp-area="" asp-controller="Shows" asp-action="Index">Репортуар</a> *@
+@*                         </li> *@
+                        
+
+@*                         @if (User.Identity != null && User.Identity.IsAuthenticated) *@
+@*                         { *@
+@*                             <li class="nav-item"> *@
+@*                                 <a class="nav-link" asp-controller="Orders" asp-action="MyTickets"> *@
+@*                                     My Tickets *@
+@*                                 </a> *@
+@*                             </li> *@
+@*                         } *@
+@*                     </ul> *@
+@*                     <partial name="_LoginPartial" /> *@
+@*                 </div> *@
+@*             </div> *@
+@*         </nav> *@
+@*     </header> *@
+@*     <div class="container"> *@
+@*         <main role="main" class="pb-3"> *@
+@*             @RenderBody() *@
+@*         </main> *@
+@*     </div> *@
+
+@*     <footer class="border-top footer text-muted"> *@
+@*         <div class="container"> *@
+@*             &copy; 2026 - OnlineTheatre.Web - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a> *@
+@*         </div> *@
+@*     </footer> *@
+@*     <script src="~/lib/jquery/dist/jquery.min.js"></script> *@
+@*     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script> *@
+@*     <script src="~/js/site.js" asp-append-version="true"></script> *@
+@*     @await RenderSectionAsync("Scripts", required: false) *@
+@* </body> *@
+@* </html> *@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Online Theatre</title>
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/OnlineTheatre.Web.styles.css" asp-append-version="true" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: #0a0a0c;
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        /* Navbar Styles */
+        .theatre-navbar {
+            background: rgba(10, 10, 12, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 2px solid rgba(220, 53, 69, 0.3);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+            padding: 0;
+            margin-bottom: 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+            .theatre-navbar::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 3px;
+                background: linear-gradient(90deg, transparent, rgba(220,53,69,0.6) 20%, rgba(220,53,69,0.8) 50%, rgba(220,53,69,0.6) 80%, transparent);
+            }
+
+        .navbar-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .theatre-navbar .container-fluid {
+            padding: 12px 0;
+        }
+
+        /* Brand/Logo */
+        .theatre-brand {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #fff !important;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            padding: 8px 0;
+        }
+
+            .theatre-brand:hover {
+                color: #dc3545 !important;
+                transform: translateY(-2px);
+            }
+
+        .brand-icon {
+            font-size: 2rem;
+            animation: brandPulse 3s ease-in-out infinite;
+        }
+
+        @@keyframes brandPulse {
+            0%, 100%
+
+        {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.1);
+        }
+
+        }
+
+        /* Navbar Toggle */
+        .theatre-navbar .navbar-toggler {
+            border: 2px solid rgba(220, 53, 69, 0.5);
+            background: rgba(220, 53, 69, 0.2);
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+            .theatre-navbar .navbar-toggler:hover {
+                background: rgba(220, 53, 69, 0.3);
+                border-color: rgba(220, 53, 69, 0.8);
+            }
+
+        .theatre-navbar .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 255, 255, 0.95)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+
+        /* Nav Items */
+        .theatre-navbar .navbar-nav {
+            gap: 8px;
+        }
+
+        .theatre-navbar .nav-link {
+            color: rgba(255, 255, 255, 0.85) !important;
+            font-weight: 600;
+            font-size: 1rem;
+            padding: 10px 18px !important;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            .theatre-navbar .nav-link::before {
+                content: "";
+                position: absolute;
+                bottom: 5px;
+                left: 18px;
+                right: 18px;
+                height: 2px;
+                background: linear-gradient(90deg, transparent, #dc3545, transparent);
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
+
+            .theatre-navbar .nav-link:hover {
+                color: #fff !important;
+                background: rgba(255, 255, 255, 0.08);
+                transform: translateY(-2px);
+            }
+
+                .theatre-navbar .nav-link:hover::before {
+                    opacity: 1;
+                }
+
+            .theatre-navbar .nav-link.active {
+                background: rgba(220, 53, 69, 0.2);
+                color: #fff !important;
+                border: 1px solid rgba(220, 53, 69, 0.4);
+            }
+
+        /* Special nav items with icons */
+        .nav-icon {
+            font-size: 1.1rem;
+        }
+
+        /* Auth Section */
+        .auth-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-auth-nav {
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: 2px solid transparent;
+        }
+
+        .btn-login-nav {
+            background: rgba(255, 255, 255, 0.10);
+            border-color: rgba(255, 255, 255, 0.20);
+            color: #fff;
+        }
+
+            .btn-login-nav:hover {
+                background: rgba(255, 255, 255, 0.15);
+                border-color: rgba(255, 255, 255, 0.35);
+                color: #fff;
+                transform: translateY(-2px);
+            }
+
+        .btn-register-nav {
+            background: linear-gradient(135deg, #dc3545 0%, #a82835 100%);
+            border-color: rgba(220, 53, 69, 0.5);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+        }
+
+            .btn-register-nav:hover {
+                background: linear-gradient(135deg, #e74c5c 0%, #c82333 100%);
+                border-color: rgba(220, 53, 69, 0.8);
+                color: #fff;
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(220, 53, 69, 0.5);
+            }
+
+        /* User Dropdown */
+        .user-dropdown {
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            padding: 8px 16px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            .user-dropdown:hover {
+                background: rgba(255, 255, 255, 0.12);
+                border-color: rgba(220, 53, 69, 0.5);
+            }
+
+        .dropdown-menu {
+            background: rgba(10, 10, 12, 0.95);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(220, 53, 69, 0.3);
+            border-radius: 12px;
+            padding: 8px;
+            margin-top: 8px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .dropdown-item {
+            color: rgba(255, 255, 255, 0.85);
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+            .dropdown-item:hover {
+                background: rgba(220, 53, 69, 0.2);
+                color: #fff;
+            }
+
+        /* Cart Badge */
+        .cart-link {
+            position: relative;
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: 2px;
+            right: 8px;
+            background: #dc3545;
+            color: #fff;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 10px;
+            min-width: 18px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(220, 53, 69, 0.5);
+            animation: badgePulse 2s ease-in-out infinite;
+        }
+
+        @@keyframes badgePulse {
+            0%, 100%
+
+        {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.1);
+        }
+
+        }
+
+        /* Main Content */
+        .main-content {
+            min-height: calc(100vh - 200px);
+        }
+
+        /* Footer */
+        .theatre-footer {
+            background: rgba(10, 10, 12, 0.95);
+            border-top: 2px solid rgba(220, 53, 69, 0.3);
+            padding: 30px 0;
+            margin-top: 60px;
+            color: rgba(255, 255, 255, 0.70);
+        }
+
+            .theatre-footer::before {
+                content: "";
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 3px;
+                background: linear-gradient(90deg, transparent, rgba(220,53,69,0.6) 20%, rgba(220,53,69,0.8) 50%, rgba(220,53,69,0.6) 80%, transparent);
+            }
+
+        .footer-content {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .footer-text {
+            font-size: 0.95rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .footer-link {
+            color: rgba(255, 255, 255, 0.70);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+            .footer-link:hover {
+                color: #dc3545;
+            }
+
+        /* Responsive */
+        @@media (max-width: 991px) {
+            .theatre-navbar .navbar-collapse {
+                background: rgba(10, 10, 12, 0.98);
+                border-radius: 12px;
+                margin-top: 15px;
+                padding: 20px;
+                border: 1px solid rgba(220, 53, 69, 0.3);
+            }
+
+            .theatre-navbar .navbar-nav {
+                gap: 5px;
+            }
+
+            .auth-section {
+                flex-direction: column;
+                width: 100%;
+                margin-top: 15px;
+                padding-top: 15px;
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .btn-auth-nav {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .theatre-brand {
+                font-size: 1.4rem;
+            }
+
+            .brand-icon {
+                font-size: 1.6rem;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg theatre-navbar">
+            <div class="container-fluid navbar-container">
+                <a class="theatre-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    <span class="brand-icon">🎭</span>
+                    <span>Online Theatre</span>
+                </a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
+                        aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">
+                                <span class="nav-icon">🏠</span>
+                                <span>Дома</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Shows" asp-action="Index">
+                                <span class="nav-icon">📅</span>
+                                <span>Репертоар</span>
+                            </a>
+                        </li>
+
+                        @if (User.Identity != null && User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Orders" asp-action="MyTickets">
+                                    <span class="nav-icon">🎫</span>
+                                    <span>Мои Билети</span>
+                                </a>
+                            </li>
+                            
+                        }
+                    </ul>
+
+                    <div class="auth-section">
+                        @if (User.Identity != null && User.Identity.IsAuthenticated)
+                        {
+                            <div class="dropdown">
+                                <button class="user-dropdown dropdown-toggle" type="button" id="userDropdown"
+                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                    <span>👤</span>
+                                    <span>@User.Identity.Name</span>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Orders" asp-action="MyTickets">
+                                            🎫 Мои Билети
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider" style="border-color: rgba(255,255,255,0.1);"></li>
+                                    <li>
+                                        <form asp-area="Identity" asp-page="/Account/Logout" method="post" style="margin: 0;">
+                                            <button type="submit" class="dropdown-item">
+                                                🚪 Одјава
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                        }
+                        else
+                        {
+                            <a href="/Identity/Account/Login" class="btn-auth-nav btn-login-nav">
+                                <span>🔐</span>
+                                <span>Најава</span>
+                            </a>
+                            <a href="/Identity/Account/Register" class="btn-auth-nav btn-register-nav">
+                                <span>✨</span>
+                                <span>Регистрација</span>
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        @RenderBody()
+    </main>
+
+    <footer class="theatre-footer">
+        <div class="footer-content">
+            <div class="footer-text">
+                &copy; 2026 - Online Theatre - Сите права задржани
+            </div>
+            <div class="footer-links">
+                <a class="footer-link" asp-area="" asp-controller="Home" asp-action="Privacy">Приватност</a>
+                <a class="footer-link" href="#">Контакт</a>
+                <a class="footer-link" href="#">За нас</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

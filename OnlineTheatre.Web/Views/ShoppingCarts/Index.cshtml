@@ -1,0 +1,698 @@
+﻿@model OnlineTheatre.Domain.DTO.ShoppingCartDTO
+
+@{
+    ViewData["Title"] = "Shopping Cart";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    @@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&display=swap');
+
+    body {
+        font-family: 'Montserrat', sans-serif;
+    }
+
+    .cart-wrapper {
+        min-height: 100vh;
+        padding: 30px 20px;
+    }
+
+    .cart-container {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    /* Header Section */
+    .cart-header {
+        position: relative;
+        overflow: hidden;
+        border-radius: 20px;
+        padding: 40px 35px;
+        background: rgba(10, 10, 12, 0.70);
+        border: 1px solid rgba(255,255,255,0.10);
+        box-shadow: 0 20px 70px rgba(0,0,0,0.50);
+        margin-bottom: 30px;
+    }
+
+        .cart-header::before {
+            content: "";
+            position: absolute;
+            inset: -50px;
+            background: radial-gradient(circle at 30% 20%, rgba(220,53,69,0.40), transparent 50%), radial-gradient(circle at 70% 60%, rgba(255,255,255,0.10), transparent 50%);
+            filter: blur(20px);
+            transform: scale(1.1);
+            z-index: 0;
+        }
+
+    .cart-header-content {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .cart-icon {
+        width: 70px;
+        height: 70px;
+        background: linear-gradient(135deg, rgba(220,53,69,0.30) 0%, rgba(220,53,69,0.15) 100%);
+        border: 2px solid rgba(220,53,69,0.40);
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        animation: cartBounce 3s ease-in-out infinite;
+    }
+
+    @@keyframes cartBounce {
+        0%, 100%
+
+    {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-5px);
+    }
+
+    }
+
+    .cart-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 3rem;
+        font-weight: 800;
+        margin: 0;
+        color: #fff;
+        letter-spacing: 0.5px;
+    }
+
+    .cart-subtitle {
+        color: rgba(255,255,255,0.75);
+        font-size: 1rem;
+        margin-top: 5px;
+    }
+
+    .item-count-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 18px;
+        background: rgba(220,53,69,0.25);
+        border: 2px solid rgba(220,53,69,0.45);
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 1rem;
+        color: rgba(255,255,255,0.95);
+    }
+
+    /* Alert */
+    .alert {
+        border-radius: 14px;
+        padding: 16px 20px;
+        margin-bottom: 25px;
+        border: 2px solid;
+        font-weight: 600;
+        animation: slideIn 0.4s ease;
+    }
+
+    @@keyframes slideIn {
+        from
+
+    {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+
+    .alert-danger {
+        background: rgba(220,53,69,0.15);
+        border-color: rgba(220,53,69,0.4);
+        color: #ff7b8a;
+    }
+
+    /* Main Layout */
+    .cart-layout {
+        display: grid;
+        grid-template-columns: 1fr 450px;
+        gap: 30px;
+    }
+
+    /* Cart Items Section */
+    .cart-items-section {
+        position: relative;
+        overflow: hidden;
+        border-radius: 20px;
+        padding: 35px;
+        background: rgba(10, 10, 12, 0.70);
+        border: 1px solid rgba(255,255,255,0.10);
+        box-shadow: 0 20px 70px rgba(0,0,0,0.50);
+    }
+
+        .cart-items-section::before {
+            content: "";
+            position: absolute;
+            inset: -50px;
+            background: radial-gradient(circle at 50% 50%, rgba(220,53,69,0.15), transparent 60%);
+            filter: blur(20px);
+            transform: scale(1.1);
+            z-index: 0;
+        }
+
+    .cart-items-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .section-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #fff;
+        margin: 0 0 25px 0;
+    }
+
+    /* Empty Cart */
+    .empty-cart {
+        text-align: center;
+        padding: 60px 20px;
+    }
+
+    .empty-cart-icon {
+        font-size: 5rem;
+        margin-bottom: 20px;
+        opacity: 0.5;
+    }
+
+    .empty-cart-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2rem;
+        font-weight: 700;
+        color: rgba(255,255,255,0.85);
+        margin-bottom: 10px;
+    }
+
+    .empty-cart-text {
+        color: rgba(255,255,255,0.60);
+        font-size: 1rem;
+        margin-bottom: 30px;
+    }
+
+    .btn-browse {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 14px 28px;
+        background: linear-gradient(135deg, #dc3545 0%, #a82835 100%);
+        border: 2px solid rgba(255,255,255,0.15);
+        color: #fff;
+        font-weight: 700;
+        border-radius: 14px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 20px rgba(220,53,69,0.35);
+        font-size: 1rem;
+    }
+
+        .btn-browse:hover {
+            background: linear-gradient(135deg, #e74c5c 0%, #c82333 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(220,53,69,0.5);
+            color: #fff;
+        }
+
+    /* Cart Item Card */
+    .cart-item {
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.10);
+        border-radius: 16px;
+        padding: 25px;
+        margin-bottom: 15px;
+        transition: all 0.3s ease;
+        animation: itemSlideIn 0.4s ease;
+    }
+
+    @@keyframes itemSlideIn {
+        from
+
+    {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    }
+
+    .cart-item:hover {
+        background: rgba(255,255,255,0.06);
+        border-color: rgba(220,53,69,0.30);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    }
+
+    .item-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+    }
+
+    .item-info {
+        flex: 1;
+    }
+
+    .item-seat {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background: rgba(220,53,69,0.20);
+        border: 2px solid rgba(220,53,69,0.40);
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: #fff;
+        margin-bottom: 12px;
+    }
+
+    .item-show {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: rgba(255,255,255,0.90);
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .item-details {
+        display: flex;
+        gap: 20px;
+        font-size: 0.9rem;
+        color: rgba(255,255,255,0.65);
+        margin-top: 8px;
+    }
+
+    .item-detail {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .item-price-section {
+        text-align: right;
+    }
+
+    .item-price {
+        font-family: 'Playfair Display', serif;
+        font-size: 2rem;
+        font-weight: 800;
+        color: #dc3545;
+        margin-bottom: 10px;
+    }
+
+    .price-currency {
+        font-size: 1rem;
+        color: rgba(255,255,255,0.75);
+        margin-left: 4px;
+    }
+
+    .btn-remove {
+        padding: 10px 20px;
+        background: rgba(220,53,69,0.15);
+        border: 2px solid rgba(220,53,69,0.35);
+        color: rgba(255,255,255,0.90);
+        font-weight: 600;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 0.9rem;
+    }
+
+        .btn-remove:hover {
+            background: rgba(220,53,69,0.30);
+            border-color: rgba(220,53,69,0.60);
+            color: #fff;
+            transform: scale(1.05);
+        }
+
+    /* Summary Panel */
+    .summary-panel {
+        position: sticky;
+        top: 20px;
+        height: fit-content;
+        border-radius: 20px;
+        padding: 35px;
+        background: rgba(10, 10, 12, 0.70);
+        border: 1px solid rgba(255,255,255,0.10);
+        box-shadow: 0 20px 70px rgba(0,0,0,0.50);
+    }
+
+        .summary-panel::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 50% 0%, rgba(40,167,69,0.15), transparent 65%);
+            border-radius: 20px;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+    .summary-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .summary-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0 0 30px 0;
+        color: #fff;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+        font-size: 1rem;
+        color: rgba(255,255,255,0.85);
+    }
+
+        .summary-row:last-of-type {
+            border-bottom: 2px solid rgba(255,255,255,0.15);
+            margin-bottom: 20px;
+        }
+
+    .summary-label {
+        font-weight: 600;
+    }
+
+    .summary-value {
+        font-weight: 700;
+    }
+
+    .summary-total {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 25px 0;
+        margin-bottom: 25px;
+    }
+
+    .total-label {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #fff;
+    }
+
+    .total-amount {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #28a745;
+    }
+
+    .btn-checkout {
+        width: 100%;
+        padding: 18px;
+        background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+        border: 2px solid rgba(255,255,255,0.15);
+        border-radius: 14px;
+        color: #fff;
+        font-weight: 700;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        box-shadow: 0 8px 25px rgba(40,167,69,0.35);
+        margin-bottom: 15px;
+    }
+
+        .btn-checkout:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(40,167,69,0.50);
+            background: linear-gradient(135deg, #34ce57 0%, #28a745 100%);
+        }
+
+    .btn-continue {
+        width: 100%;
+        padding: 14px;
+        background: rgba(255,255,255,0.08);
+        border: 2px solid rgba(255,255,255,0.15);
+        border-radius: 14px;
+        color: rgba(255,255,255,0.95);
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+    }
+
+        .btn-continue:hover {
+            background: rgba(255,255,255,0.12);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+    .summary-note {
+        margin-top: 20px;
+        padding: 15px;
+        background: rgba(255,255,255,0.03);
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.08);
+        font-size: 0.85rem;
+        color: rgba(255,255,255,0.7);
+        line-height: 1.5;
+    }
+
+    /* Security Badge */
+    .security-badge {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 20px;
+        padding: 12px;
+        background: rgba(40,167,69,0.10);
+        border: 1px solid rgba(40,167,69,0.25);
+        border-radius: 10px;
+        font-size: 0.85rem;
+        color: rgba(40,167,69,1);
+        font-weight: 600;
+    }
+
+    /* Responsive */
+    @@media (max-width: 1200px) {
+        .cart-layout
+
+    {
+        grid-template-columns: 1fr;
+    }
+
+    .summary-panel {
+        position: relative;
+        top: 0;
+    }
+
+    }
+
+    @@media (max-width: 768px) {
+        .cart-title
+
+    {
+        font-size: 2rem;
+    }
+
+    .cart-header-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .item-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .item-price-section {
+        text-align: left;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .cart-items-section,
+    .summary-panel {
+        padding: 25px;
+    }
+
+    }
+</style>
+
+<div class="cart-wrapper">
+    <div class="cart-container">
+
+        <!-- Header Section -->
+        <div class="cart-header">
+            <div class="cart-header-content">
+                <div class="header-left">
+                    <div class="cart-icon">🛒</div>
+                    <div>
+                        <h1 class="cart-title">Кошничка</h1>
+                        <div class="cart-subtitle">Прегледајте ги вашите избрани билети</div>
+                    </div>
+                </div>
+                @if (Model != null && Model.Tickets != null && Model.Tickets.Any())
+                {
+                    <div class="item-count-badge">
+                        🎫 @Model.Tickets.Count @(Model.Tickets.Count == 1 ? "билет" : "билети")
+                    </div>
+                }
+            </div>
+        </div>
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger">⚠️ @TempData["Error"]</div>
+        }
+
+        @if (Model == null || Model.Tickets == null || !Model.Tickets.Any())
+        {
+            <!-- Empty Cart -->
+            <div class="cart-items-section">
+                <div class="cart-items-content">
+                    <div class="empty-cart">
+                        <div class="empty-cart-icon">🛒</div>
+                        <h3 class="empty-cart-title">Вашата кошничка е празна</h3>
+                        <p class="empty-cart-text">Додајте билети за да започнете со резервација</p>
+                        <a asp-controller="Shows" asp-action="Index" class="btn-browse">
+                            🎭 Прелистај претстави
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <!-- Cart Layout -->
+            <div class="cart-layout">
+
+                <!-- Cart Items Section -->
+                <div class="cart-items-section">
+                    <div class="cart-items-content">
+                        <h2 class="section-title">Ваши Билети</h2>
+
+                        @foreach (var item in Model.Tickets)
+                        {
+                            <div class="cart-item">
+                                <div class="item-content">
+                                    <div class="item-info">
+                                        <div class="item-seat">
+                                            🪑 Седиште @item.Ticket.SeatLabel
+                                        </div>
+                                        <div class="item-show">
+                                            🎭 @(item.Ticket.Show?.Titile ?? "Непозната претстава")
+                                        </div>
+                                        @if (item.Ticket.Show != null)
+                                        {
+                                            <div class="item-details">
+                                                <div class="item-detail">
+                                                    📅 @item.Ticket.Show.StartTime.ToString("dd.MM.yyyy")
+                                                </div>
+                                                <div class="item-detail">
+                                                    🕐 @item.Ticket.Show.StartTime.ToString("HH:mm")
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+
+                                    <div class="item-price-section">
+                                        <div class="item-price">
+                                            @item.Ticket.Price
+                                            <span class="price-currency">ден</span>
+                                        </div>
+
+                                        <form asp-action="DeleteTicket" method="post" style="display: inline;">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="ticketId" value="@item.TicketId" />
+                                            <button type="submit" class="btn-remove">🗑️ Отстрани</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                    </div>
+                </div>
+
+                <!-- Summary Panel -->
+                <div class="summary-panel">
+                    <div class="summary-content">
+                        <h2 class="summary-title">Резиме</h2>
+
+                        <div class="summary-row">
+                            <span class="summary-label">Број на билети</span>
+                            <span class="summary-value">@Model.Tickets.Count</span>
+                        </div>
+
+                        <div class="summary-row">
+                            <span class="summary-label">Вкупно</span>
+                            <span class="summary-value">@Model.TotalPrice ден</span>
+                        </div>
+
+                        <div class="summary-total">
+                            <span class="total-label">Тотал</span>
+                            <span class="total-amount">@Model.TotalPrice <span class="price-currency">ден</span></span>
+                        </div>
+
+                        <form asp-action="Order" method="post">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn-checkout">
+                                ✓ Нарачај билети
+                            </button>
+                        </form>
+
+                        <a asp-controller="Shows" asp-action="Index" class="btn-continue">
+                            ← Продолжи со купување
+                        </a>
+
+                        <div class="security-badge">
+                            🔒 Сигурна трансакција
+                        </div>
+
+                        <div class="summary-note">
+                            💡 <strong>Забелешка:</strong> Вашите билети ќе бидат резервирани веднаш по потврдата на нарачката.
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        }
+
+    </div>
+</div>

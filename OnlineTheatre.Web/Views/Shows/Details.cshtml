@@ -1,0 +1,970 @@
+﻿
+
+@model OnlineTheatre.Domain.DomainModels.Show
+
+@{
+    ViewData["Title"] = Model.Titile;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    @@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&display=swap');
+
+    body {
+        font-family: 'Montserrat', sans-serif;
+    }
+
+    .show-wrapper {
+        min-height: 100vh;
+        padding: 30px 20px;
+    }
+
+    .show-container {
+        max-width: 1600px;
+        margin: 0 auto;
+    }
+
+    /* Header Section */
+    .show-header {
+        position: relative;
+        overflow: hidden;
+        border-radius: 20px;
+        padding: 40px 35px;
+        background: rgba(10, 10, 12, 0.70);
+        border: 1px solid rgba(255,255,255,0.10);
+        box-shadow: 0 20px 70px rgba(0,0,0,0.50);
+        margin-bottom: 30px;
+    }
+
+        .show-header::before {
+            content: "";
+            position: absolute;
+            inset: -50px;
+            background: radial-gradient(circle at 30% 20%, rgba(220,53,69,0.40), transparent 50%), radial-gradient(circle at 70% 60%, rgba(255,255,255,0.10), transparent 50%), radial-gradient(circle at 50% 90%, rgba(220,53,69,0.20), transparent 55%);
+            filter: blur(20px);
+            transform: scale(1.1);
+            z-index: 0;
+        }
+
+    .show-header-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: rgba(255,255,255,0.75);
+        text-decoration: none;
+        font-size: 0.95rem;
+        margin-bottom: 20px;
+        transition: all 0.2s ease;
+        font-weight: 600;
+    }
+
+        .back-link:hover {
+            color: #dc3545;
+            transform: translateX(-3px);
+        }
+
+    .show-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 3.5rem;
+        font-weight: 800;
+        margin: 0 0 20px 0;
+        color: #fff;
+        letter-spacing: 0.5px;
+        line-height: 1.1;
+    }
+
+    .show-meta-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 15px;
+        margin-top: 25px;
+    }
+
+    .meta-card {
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.10);
+        border-radius: 14px;
+        padding: 16px 20px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .meta-icon {
+        font-size: 1.6rem;
+    }
+
+    .meta-content {
+        flex: 1;
+    }
+
+    .meta-label {
+        font-size: 0.8rem;
+        color: rgba(255,255,255,0.6);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+    }
+
+    .meta-value {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: rgba(255,255,255,0.95);
+    }
+
+    /* Alert */
+    .alert {
+        border-radius: 14px;
+        padding: 16px 20px;
+        margin-bottom: 25px;
+        border: 2px solid;
+        font-weight: 600;
+    }
+
+    .alert-danger {
+        background: rgba(220,53,69,0.15);
+        border-color: rgba(220,53,69,0.4);
+        color: #ff7b8a;
+    }
+
+    .alert-success {
+        background: rgba(40,167,69,0.15);
+        border-color: rgba(40,167,69,0.4);
+        color: #90EE90;
+    }
+
+    /* Main Layout */
+    .seating-layout {
+        display: grid;
+        grid-template-columns: 1fr 420px;
+        gap: 30px;
+    }
+
+    /* Theater Section */
+    .theater-section {
+        position: relative;
+        overflow: hidden;
+        border-radius: 20px;
+        padding: 40px;
+        background: rgba(10, 10, 12, 0.70);
+        border: 1px solid rgba(255,255,255,0.10);
+        box-shadow: 0 20px 70px rgba(0,0,0,0.50);
+    }
+
+        .theater-section::before {
+            content: "";
+            position: absolute;
+            inset: -50px;
+            background: radial-gradient(circle at 50% 10%, rgba(220,53,69,0.30), transparent 55%), linear-gradient(180deg, rgba(0,0,0,0.40), rgba(0,0,0,0.70));
+            filter: blur(18px);
+            transform: scale(1.1);
+            z-index: 0;
+        }
+
+    .theater-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .theater-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #fff;
+        text-align: center;
+        margin-bottom: 35px;
+    }
+
+    /* Stage */
+    .stage {
+        background: linear-gradient(180deg, rgba(220,53,69,0.40) 0%, rgba(220,53,69,0.18) 100%);
+        border: 2px solid rgba(220,53,69,0.50);
+        border-radius: 18px;
+        padding: 25px;
+        text-align: center;
+        margin-bottom: 60px;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .stage::before {
+            content: "";
+            position: absolute;
+            top: -2px;
+            left: 0;
+            right: 0;
+            height: 8px;
+            background: linear-gradient(90deg, transparent, rgba(220,53,69,1) 15%, rgba(220,53,69,1) 50%, rgba(220,53,69,1) 85%, transparent);
+            box-shadow: 0 0 30px rgba(220,53,69,0.8);
+            animation: stageLight 3s ease-in-out infinite;
+        }
+
+    @@keyframes stageLight {
+        0%, 100%
+
+    {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.7;
+    }
+
+    }
+
+    .stage-label {
+        font-family: 'Playfair Display', serif;
+        font-size: 2rem;
+        font-weight: 700;
+        color: rgba(255,255,255,0.95);
+        text-transform: uppercase;
+        letter-spacing: 6px;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    }
+
+    /* Sections Container */
+    .sections-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 50px;
+        padding: 20px 0;
+    }
+
+    /* Section C - Front/Center */
+    .section-c {
+        width: 100%;
+        max-width: 700px;
+    }
+
+    /* Sections A & B - Side by side at back */
+    .sections-back {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+        width: 100%;
+        max-width: 1200px;
+    }
+
+    .section {
+        background: rgba(255,255,255,0.02);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 16px;
+        padding: 25px;
+    }
+
+    .section-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: rgba(255,255,255,0.90);
+        text-align: center;
+        margin-bottom: 20px;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+    }
+
+    .section-subtitle {
+        text-align: center;
+        color: rgba(255,255,255,0.60);
+        font-size: 0.85rem;
+        margin-bottom: 20px;
+        font-weight: 600;
+    }
+
+    .seat-rows {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .seat-row {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .seat {
+        width: 45px;
+        height: 45px;
+        border-radius: 10px 10px 4px 4px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        font-weight: 700;
+        position: relative;
+        border: 2px solid transparent;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+        user-select: none;
+    }
+
+        .seat::after {
+            content: "";
+            position: absolute;
+            bottom: -4px;
+            left: 12%;
+            right: 12%;
+            height: 4px;
+            background: currentColor;
+            opacity: 0.3;
+            border-radius: 2px;
+        }
+
+        /* Available seat */
+        .seat.available {
+            background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.08) 100%);
+            border-color: rgba(255,255,255,0.25);
+            color: rgba(255,255,255,0.80);
+        }
+
+            .seat.available:hover {
+                background: linear-gradient(135deg, rgba(220,53,69,0.40) 0%, rgba(220,53,69,0.25) 100%);
+                border-color: rgba(220,53,69,0.70);
+                color: #fff;
+                transform: translateY(-5px) scale(1.1);
+                box-shadow: 0 12px 30px rgba(220,53,69,0.45);
+            }
+
+        /* Selected seat */
+        .seat.selected {
+            background: linear-gradient(135deg, rgba(13,110,253,0.60) 0%, rgba(10,88,202,0.60) 100%);
+            border-color: rgba(13,110,253,0.95);
+            color: #fff;
+            transform: translateY(-3px);
+            box-shadow: 0 0 0 4px rgba(13,110,253,0.20), 0 10px 25px rgba(13,110,253,0.40);
+            animation: seatPulse 2s ease-in-out infinite;
+        }
+
+    @@keyframes seatPulse {
+        0%, 100%
+
+    {
+        box-shadow: 0 0 0 4px rgba(13,110,253,0.20), 0 10px 25px rgba(13,110,253,0.40);
+    }
+
+    50% {
+        box-shadow: 0 0 0 6px rgba(13,110,253,0.30), 0 12px 30px rgba(13,110,253,0.50);
+    }
+
+    }
+
+    /* Sold seat */
+    .seat.sold {
+        background: linear-gradient(135deg, rgba(220,53,69,0.50) 0%, rgba(176,42,55,0.50) 100%);
+        border-color: rgba(220,53,69,0.40);
+        color: rgba(255,255,255,0.40);
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+
+    /* Legend */
+    .legend {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        margin-top: 40px;
+        padding: 20px;
+        background: rgba(255,255,255,0.03);
+        border-radius: 14px;
+        border: 1px solid rgba(255,255,255,0.08);
+        flex-wrap: wrap;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 0.9rem;
+        color: rgba(255,255,255,0.85);
+        font-weight: 600;
+    }
+
+    .legend-seat {
+        width: 34px;
+        height: 34px;
+        border-radius: 8px 8px 3px 3px;
+        position: relative;
+    }
+
+        .legend-seat::after {
+            content: "";
+            position: absolute;
+            bottom: -3px;
+            left: 15%;
+            right: 15%;
+            height: 3px;
+            background: currentColor;
+            opacity: 0.3;
+            border-radius: 2px;
+        }
+
+        .legend-seat.available {
+            background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.08) 100%);
+            border: 2px solid rgba(255,255,255,0.25);
+            color: rgba(255,255,255,0.80);
+        }
+
+        .legend-seat.selected {
+            background: linear-gradient(135deg, rgba(13,110,253,0.60) 0%, rgba(10,88,202,0.60) 100%);
+            border: 2px solid rgba(13,110,253,0.95);
+            color: #fff;
+        }
+
+        .legend-seat.sold {
+            background: linear-gradient(135deg, rgba(220,53,69,0.50) 0%, rgba(176,42,55,0.50) 100%);
+            border: 2px solid rgba(220,53,69,0.40);
+            color: rgba(255,255,255,0.40);
+        }
+
+    /* Booking Panel */
+    .booking-panel {
+        position: sticky;
+        top: 20px;
+        height: fit-content;
+        border-radius: 20px;
+        padding: 35px;
+        background: rgba(10, 10, 12, 0.70);
+        border: 1px solid rgba(255,255,255,0.10);
+        box-shadow: 0 20px 70px rgba(0,0,0,0.50);
+    }
+
+        .booking-panel::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 50% 0%, rgba(220,53,69,0.18), transparent 65%);
+            border-radius: 20px;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+    .booking-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .panel-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0 0 25px 0;
+        color: #fff;
+    }
+
+    .selection-info {
+        background: rgba(13,110,253,0.12);
+        border: 2px solid rgba(13,110,253,0.35);
+        border-radius: 14px;
+        padding: 20px;
+        text-align: center;
+        margin-bottom: 25px;
+    }
+
+    .selection-label {
+        font-size: 0.85rem;
+        color: rgba(255,255,255,0.65);
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+        margin-bottom: 8px;
+    }
+
+    .selection-count {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #5ea3ff;
+        line-height: 1;
+    }
+
+    .selected-seats-list {
+        margin: 25px 0;
+    }
+
+    .seats-label {
+        font-size: 0.85rem;
+        color: rgba(255,255,255,0.65);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 12px;
+        font-weight: 600;
+    }
+
+    .selected-seats-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        min-height: 50px;
+        padding: 12px;
+        background: rgba(0,0,0,0.25);
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .seat-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 14px;
+        background: rgba(13,110,253,0.25);
+        border: 1px solid rgba(13,110,253,0.45);
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: rgba(255,255,255,0.95);
+    }
+
+    .empty-selection {
+        color: rgba(255,255,255,0.45);
+        font-size: 0.9rem;
+        text-align: center;
+        padding: 12px;
+        width: 100%;
+    }
+
+    .btn-book {
+        width: 100%;
+        padding: 18px;
+        background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+        border: 2px solid rgba(255,255,255,0.15);
+        border-radius: 14px;
+        color: #fff;
+        font-weight: 700;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        box-shadow: 0 8px 25px rgba(40,167,69,0.35);
+        margin-top: 25px;
+    }
+
+        .btn-book:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(40,167,69,0.50);
+            background: linear-gradient(135deg, #34ce57 0%, #28a745 100%);
+        }
+
+        .btn-book:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+        }
+
+    .btn-back {
+        width: 100%;
+        padding: 14px;
+        background: rgba(255,255,255,0.08);
+        border: 2px solid rgba(255,255,255,0.15);
+        border-radius: 14px;
+        color: rgba(255,255,255,0.95);
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+        margin-top: 15px;
+    }
+
+        .btn-back:hover {
+            background: rgba(255,255,255,0.12);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+    .booking-note {
+        margin-top: 20px;
+        padding: 15px;
+        background: rgba(255,255,255,0.03);
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.08);
+        font-size: 0.85rem;
+        color: rgba(255,255,255,0.7);
+        line-height: 1.5;
+    }
+
+    /* Responsive */
+    @@media (max-width: 1400px) {
+        .sections-back
+
+    {
+        gap: 30px;
+    }
+
+    }
+
+    @@media (max-width: 1200px) {
+        .seating-layout
+
+    {
+        grid-template-columns: 1fr;
+    }
+
+    .booking-panel {
+        position: relative;
+        top: 0;
+    }
+
+    .show-title {
+        font-size: 2.5rem;
+    }
+
+    .sections-back {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+
+    }
+
+    @@media (max-width: 768px) {
+        .show-title
+
+    {
+        font-size: 2rem;
+    }
+
+    .show-meta-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .seat {
+        width: 38px;
+        height: 38px;
+        font-size: 0.7rem;
+    }
+
+    .section-title {
+        font-size: 1.2rem;
+    }
+
+    .theater-section,
+    .booking-panel {
+        padding: 25px;
+    }
+
+    }
+</style>
+
+<div class="show-wrapper">
+    <div class="show-container">
+
+        <!-- Header Section -->
+        <div class="show-header">
+            <div class="show-header-content">
+                <a asp-controller="Shows" asp-action="Index" class="back-link">
+                    ← Назад кон календар
+                </a>
+
+                <h1 class="show-title">@Model.Titile</h1>
+
+                <div class="show-meta-grid">
+                    <div class="meta-card">
+                        <div class="meta-icon">📅</div>
+                        <div class="meta-content">
+                            <div class="meta-label">Датум</div>
+                            <div class="meta-value">@Model.StartTime.ToString("dd MMMM yyyy")</div>
+                        </div>
+                    </div>
+
+                    <div class="meta-card">
+                        <div class="meta-icon">🕐</div>
+                        <div class="meta-content">
+                            <div class="meta-label">Време</div>
+                            <div class="meta-value">@Model.StartTime.ToString("HH:mm")</div>
+                        </div>
+                    </div>
+
+                    <div class="meta-card">
+                        <div class="meta-icon">💰</div>
+                        <div class="meta-content">
+                            <div class="meta-label">Цена по билет</div>
+                            <div class="meta-value">@Model.BasePrice ден</div>
+                        </div>
+                    </div>
+                    @if (User.IsInRole("Admin"))
+                        {
+                    <div>
+                        <a asp-action="Delete" asp-route-id="@Model.Id"> Delete </a>
+                    </div>
+                        }
+                </div>
+            </div>
+        </div>
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger">⚠️ @TempData["Error"]</div>
+        }
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success">✅ @TempData["Success"]</div>
+        }
+
+        <!-- Main Seating Layout -->
+        <div class="seating-layout">
+
+            <!-- Theater Section -->
+            <div class="theater-section">
+                <div class="theater-content">
+
+                    <h3 class="theater-title">Изберете Седишта</h3>
+
+                    <!-- Stage -->
+                    <div class="stage">
+                        <div class="stage-label">🎭 СЦЕНА 🎭</div>
+                    </div>
+
+                    <!-- Sections Container -->
+                    <div class="sections-container">
+
+                        <!-- Section C - Front Center (closest to stage) -->
+                        <div class="section-c">
+                            <div class="section">
+                                <div class="section-title">Секција C</div>
+                                <div class="section-subtitle">⭐ Најблиску до сцената - Премиум седишта</div>
+
+                                <div class="seat-rows">
+                                    @{
+                                        var sectionC = Model.Tickets.Where(t => t.SeatLabel.StartsWith("C")).OrderBy(t => t.SeatLabel).ToList();
+                                        if (sectionC.Any())
+                                        {
+                                            <div class="seat-row">
+                                                @foreach (var ticket in sectionC)
+                                                {
+                                                    if (ticket.IsSold)
+                                                    {
+                                                        <div class="seat sold" title="Продадено">
+                                                            @ticket.SeatLabel.Split('-').Last()
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="seat available" data-ticket-id="@ticket.Id" title="@ticket.SeatLabel">
+                                                            @ticket.SeatLabel.Split('-').Last()
+                                                        </div>
+                                                    }
+                                                }
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sections A & B - Back sections side by side -->
+                        <div class="sections-back">
+
+                            <!-- Section A - Left Back -->
+                            <div class="section">
+                                <div class="section-title">Секција A</div>
+                                <div class="section-subtitle">👈 Лева страна</div>
+
+                                <div class="seat-rows">
+                                    @foreach (var row in Model.Tickets
+                                    .Where(t => t.SeatLabel.StartsWith("A"))
+                                    .GroupBy(t => t.SeatLabel.Split('-')[0])
+                                    .OrderBy(g => g.Key))
+                                    {
+                                        <div class="seat-row">
+                                            @foreach (var ticket in row.OrderBy(t => t.SeatLabel))
+                                            {
+                                                if (ticket.IsSold)
+                                                {
+                                                    <div class="seat sold" title="Продадено">
+                                                        @ticket.SeatLabel.Split('-').Last()
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="seat available" data-ticket-id="@ticket.Id" title="@ticket.SeatLabel">
+                                                        @ticket.SeatLabel.Split('-').Last()
+                                                    </div>
+                                                }
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+
+                            <!-- Section B - Right Back -->
+                            <div class="section">
+                                <div class="section-title">Секција B</div>
+                                <div class="section-subtitle">👉 Десна страна</div>
+
+                                <div class="seat-rows">
+                                    @foreach (var row in Model.Tickets
+                                    .Where(t => t.SeatLabel.StartsWith("B"))
+                                    .GroupBy(t => t.SeatLabel.Split('-')[0])
+                                    .OrderBy(g => g.Key))
+                                    {
+                                        <div class="seat-row">
+                                            @foreach (var ticket in row.OrderBy(t => t.SeatLabel))
+                                            {
+                                                if (ticket.IsSold)
+                                                {
+                                                    <div class="seat sold" title="Продадено">
+                                                        @ticket.SeatLabel.Split('-').Last()
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="seat available" data-ticket-id="@ticket.Id" title="@ticket.SeatLabel">
+                                                        @ticket.SeatLabel.Split('-').Last()
+                                                    </div>
+                                                }
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Legend -->
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="legend-seat available"></div>
+                            <span>Слободно</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-seat selected"></div>
+                            <span>Избрано</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-seat sold"></div>
+                            <span>Продадено</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Booking Panel -->
+            <div class="booking-panel">
+                <div class="booking-content">
+                    @* <h2 class="panel-title">Вашата Резервација</h2> *@
+
+                    <div class="selection-info">
+                        <div class="selection-label">Избрани седишта</div>
+                        <div class="selection-count" id="seatCount">0</div>
+                    </div>
+
+                    <div class="selected-seats-list">
+                        <div class="seats-label">Ваши седишта</div>
+                        <div class="selected-seats-container" id="selectedSeatsContainer">
+                            <div class="empty-selection">Кликнете на седиштата за да ги изберете</div>
+                        </div>
+                    </div>
+
+                    <form asp-controller="Ticket" asp-action="AddSelectedToCart" method="post" id="seatForm">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="ShowId" value="@Model.Id" />
+
+                        <button type="submit" class="btn-book" id="addBtn" disabled>
+                            Додади во кошничка
+                        </button>
+                    </form>
+
+                    <a asp-action="Index" class="btn-back">
+                        ← Назад кон календар
+                    </a>
+
+                    <div class="booking-note">
+                        💡 <strong>Совет:</strong> Кликнете на било кое слободно седиште за да го изберете. Избраните седишта се означени со сина боја.
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+ @using System.Text.Json
+@{
+    var preselectedIds = (ViewBag.PreselectedTicketIds as List<Guid>) ?? new List<Guid>();
+    var preselectedJson = JsonSerializer.Serialize(preselectedIds);
+}
+
+<script>
+   
+    const preselected = @Html.Raw(preselectedJson);
+    const selected = new Set(preselected.map(x => x.toString()));
+    const addBtn = document.getElementById("addBtn");
+    const form = document.getElementById("seatForm");
+    const seatCountEl = document.getElementById("seatCount");
+    const selectedContainer = document.getElementById("selectedSeatsContainer");
+
+     selected.forEach(id => {
+        const seat = document.querySelector(`[data-ticket-id="${id}"]`);
+        if (seat) seat.classList.add("selected");
+    });
+
+    function updateUI() {
+        // Update count
+        seatCountEl.textContent = selected.size;
+
+        // Update button
+        addBtn.disabled = selected.size === 0;
+
+        // Update selected seats display
+        if (selected.size === 0) {
+            selectedContainer.innerHTML = '<div class="empty-selection">Кликнете на седиштата за да ги изберете</div>';
+        } else {
+            const badges = Array.from(selected).map(id => {
+                const seat = document.querySelector(`[data-ticket-id="${id}"]`);
+                const label = seat ? seat.title : id;
+                return `<div class="seat-badge">${label}</div>`;
+            }).join('');
+            selectedContainer.innerHTML = badges;
+        }
+    }
+
+    // Toggle selection on available seats
+    document.querySelectorAll(".seat.available").forEach(seat => {
+        seat.addEventListener("click", () => {
+            const id = seat.dataset.ticketId;
+
+            if (selected.has(id)) {
+                selected.delete(id);
+                seat.classList.remove("selected");
+            } else {
+                selected.add(id);
+                seat.classList.add("selected");
+            }
+
+            updateUI();
+        });
+    });
+
+    // On submit: create hidden inputs
+    form.addEventListener("submit", (e) => {
+        // Remove previous hidden inputs if any
+        form.querySelectorAll("input[name='SelectedTicketIds']").forEach(x => x.remove());
+
+        // Add new ones
+        selected.forEach(id => {
+            const input = document.createElement("input");
+            input.type = "hidden";
+            input.name = "SelectedTicketIds";
+            input.value = id;
+            form.appendChild(input);
+        });
+
+        // Disable button to prevent double submit
+        addBtn.disabled = true;
+        addBtn.textContent = "Обработка...";
+    });
+</script>
+

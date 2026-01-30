@@ -1,0 +1,69 @@
+﻿@model OnlineTheatre.Domain.DomainModels.Show
+
+@{
+    ViewData["Title"] = Model.Titile + " - Tickets";
+}
+
+<div class="row">
+    <div class="col-md-8">
+        <h2>@Model.Titile</h2>
+        <p><strong>Date:</strong> @Model.StartTime.ToString("dddd, MMMM dd, yyyy 'at' hh:mm tt")</p>
+        <p><strong>Ticket Price:</strong> $@Model.BasePrice</p>
+        <p><strong>Total Seats:</strong> @Model.Tickets.Count</p>
+        <hr />
+
+        @if (Model.Tickets == null || !Model.Tickets.Any())
+        {
+            <p class="alert alert-info">No tickets available for this show.</p>
+        }
+        else
+        {
+            <!-- Tickets Grid - like theatre seating -->
+            <div class="row">
+                @foreach (var ticket in Model.Tickets.OrderBy(t => t.SeatLabel))
+                {
+                    var isSold = ticket.IsSold;
+                    var statusClass = isSold ? "bg-danger" : "bg-success";
+                    var statusText = isSold ? "SOLD" : "AVAILABLE";
+
+                    <div class="col-2 col-sm-1 mb-2">
+                        <div class="card h-100 @statusClass text-white text-center p-2">
+                            <div class="card-body p-1">
+                                <strong>@ticket.SeatLabel</strong>
+                                <br />
+                                <small>@statusText</small>
+                                @if (!isSold)
+                                {
+                                    <form asp-action="AddToCart" asp-controller="Tickets" method="post" class="mt-1">
+                                        <input type="hidden" name="ticketId" value="@ticket.Id" />
+                                        <input type="number" name="quantity" value="1" min="1" max="4"
+                                               class="form-control form-control-sm mb-1" />
+                                        <button type="submit" class="btn btn-light btn-sm w-100">
+                                            Add
+                                        </button>
+                                    </form>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
+    <div class="col-md-4">
+        <div class="card sticky-top">
+            <div class="card-header">
+                <h5>Your Selection</h5>
+            </div>
+            <div class="card-body">
+                <a asp-action="Index" asp-controller="ShoppingCarts" class="btn btn-primary w-100 mb-2">
+                    View Cart
+                </a>
+                <a asp-action="Index" class="btn btn-outline-secondary w-100">
+                    Other Shows
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
