@@ -127,29 +127,36 @@ await SeedAdminAsync(app.Services);
 app.Run();
 
 // FIXED Seed (uses Titile correctly)
-using (var scope = app.Services.CreateScope())
+//using (var scope = app.Services.CreateScope())
+//{
+//    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+//    if (!context.Shows.Any())
+//    {
+//        var shows = new List<Show>
+//        {
+//            new Show { Titile = "Hamlet", StartTime = DateTime.Now.AddDays(10), BasePrice = 50m },
+//            new Show { Titile = "Romeo & Juliet", StartTime = DateTime.Now.AddDays(15), BasePrice = 45m },
+//            new Show { Titile = "Macbeth", StartTime = DateTime.Now.AddDays(20), BasePrice = 60m }
+//        };
+
+//        context.Shows.AddRange(shows);
+//        context.SaveChanges();
+
+//        // Generate tickets for seeded shows!
+//        var showService = scope.ServiceProvider.GetRequiredService<IShowService>();
+//        foreach (var show in shows)
+//        {
+//            showService.Insert(show);  // Triggers GenerateTicketsForShow
+//        }
+
+//        Console.WriteLine("✅ Shows + 150 tickets seeded!");
+//    }
+//}
+
+if (app.Environment.IsDevelopment())
 {
-    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
-    if (!context.Shows.Any())
-    {
-        var shows = new List<Show>
-        {
-            new Show { Titile = "Hamlet", StartTime = DateTime.Now.AddDays(10), BasePrice = 50m },
-            new Show { Titile = "Romeo & Juliet", StartTime = DateTime.Now.AddDays(15), BasePrice = 45m },
-            new Show { Titile = "Macbeth", StartTime = DateTime.Now.AddDays(20), BasePrice = 60m }
-        };
-
-        context.Shows.AddRange(shows);
-        context.SaveChanges();
-
-        // Generate tickets for seeded shows!
-        var showService = scope.ServiceProvider.GetRequiredService<IShowService>();
-        foreach (var show in shows)
-        {
-            showService.Insert(show);  // Triggers GenerateTicketsForShow
-        }
-
-        Console.WriteLine("✅ Shows + 150 tickets seeded!");
-    }
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    db.Database.Migrate();
 }
